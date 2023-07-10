@@ -21,17 +21,17 @@ describe('testing the Signup Handler', () => {
   };
   const next = jest.fn();
 
-  test('Should respons with a new user if a Username and Password is present on the request', async () => {
-
-    let req = {
+  test('Should respond with a new user if a username and password are present in the request body', async () => {
+    const req = {
       body: {
         username: 'test',
         password: 'test'
       }
     };
-
+  
     await handleSignup(req, res, next);
     expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.status.mock.calls[0][0]).toBe(201);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
         user: expect.any(Object),
