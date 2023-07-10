@@ -1,5 +1,5 @@
 'use strict';
-
+require('dotenv').config();
 const bcrypt = require('bcrypt');
 
 const userSchema = (sequelize, DataTypes) => {
@@ -9,13 +9,13 @@ const userSchema = (sequelize, DataTypes) => {
     token: {
       type: DataTypes.VIRTUAL,
       get() {
-        return jwt.sign({ username: this.username });
+        return jwt.sign({ username: this.username }, process.env.SECRET, {expiresIn: "1h"});
       }
     }
   });
 
   model.beforeCreate(async (user) => {
-    let hashedPass = bcrypt.hash(user.password, 10);
+    let hashedPass = bcrypt.hash(user.password, 12);
     user.password = hashedPass;
   });
 
@@ -24,7 +24,7 @@ const userSchema = (sequelize, DataTypes) => {
     const user = await this.findOne({ username })
     const valid = await bcrypt.compare(password, user.password)
     if (valid) { return user; }
-    throw new Error('Invalid User');
+    else { return 'Invalid User'};
   }
 
   // Bearer AUTH: Validating a token
@@ -33,9 +33,8 @@ const userSchema = (sequelize, DataTypes) => {
       const parsedToken = jwt.verify(token, process.env.SECRET);
       const user = this.findOne({ username: parsedToken.username })
       if (user) { return user; }
-      throw new Error("User Not Found");
     } catch (e) {
-      throw new Error(e.message)
+      res.sendStatus(403)
     }
   }
 

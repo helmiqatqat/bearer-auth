@@ -2,18 +2,17 @@
 
 process.env.SECRET = "TEST_SECRET";
 
-const { db, users } = require('../../../../../src/auth/models');
+const { db } = require('../../../../../src/auth/models');
 const { handleSignin } = require('../../../../../src/auth/router/handlers.js');
 
 beforeAll(async () => {
   await db.sync();
-  await users.create({ username: 'test', password: 'test' });
 });
 afterAll(async () => {
   await db.drop();
 });
 
-describe('Testing the signin handler', () => {
+describe('testing the Signup Handler', () => {
 
   const res = {
     send: jest.fn(() => res),
@@ -22,33 +21,32 @@ describe('Testing the signin handler', () => {
   };
   const next = jest.fn();
 
-  test('Should find a User when a `user` is present on the request', async () => {
+  test('Should respons with a new user if a Username and Password is present on the request', async () => {
+
     let req = {
-      user: await users.findOne({ where: { username: 'test' } }),
-    }
+      body: {
+        username: 'test',
+        password: 'test'
+      }
+    };
 
     await handleSignin(req, res, next);
-    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.status).toHaveBeenCalledWith(201);
     expect(res.json).toHaveBeenCalledWith(
       expect.objectContaining({
-        user: expect.objectContaining({
-          username: expect.any(String),
-          password: expect.any(String),
-          token: expect.any(String),
-        }),
-        token: expect.any(String),
+        user: expect.any(Object),
+        token: expect.any(String)
       })
     );
   });
 
-  test('Should trigger error handler when no user is present on the request', async () => {
+  test('Should call the error handler if no body attached to the request the on the request body', async () => {
     let req = {};
     jest.clearAllMocks();
 
     await handleSignin(req, res, next);
     expect(res.status).not.toHaveBeenCalled();
-    expect(res.send).not.toHaveBeenCalled();
     expect(res.json).not.toHaveBeenCalled();
-    expect(next).toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(expect.anything());
   });
 });

@@ -4,7 +4,7 @@ process.env.SECRET = "TEST_SECRET";
 
 const { db } = require('../../../../src/auth/models');
 const supertest = require('supertest');
-const server = require('../../../../src/server.js').server;
+const {server} = require('../../../../src/server.js');
 
 const mockRequest = supertest(server);
 
@@ -56,9 +56,8 @@ describe('Auth Router', () => {
     accessToken = response.body.token;
 
     // First, use basic to login to get a token
-    const bearerResponse = await mockRequest
-      .get('/users')
-      .set('Authorization', `Bearer ${accessToken}`);
+    const bearerResponse = await mockRequest.get('/users')
+    .set('Authorization', `Bearer ${accessToken}`);
 
     // Not checking the value of the response, only that we "got in"
     expect(bearerResponse.status).toBe(200);
@@ -105,7 +104,7 @@ describe('Auth Router', () => {
 
     const response = await mockRequest.get('/users')
       .set('Authorization', `Bearer ${accessToken}`);
-
+    
     expect(response.status).toBe(200);
     expect(response.body).toBeTruthy();
     expect(response.body).toEqual(expect.anything());

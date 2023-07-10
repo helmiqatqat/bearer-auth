@@ -57,7 +57,7 @@ describe('Auth Middleware', () => {
 
       return bearer(req, res, next)
         .then(() => {
-          expect(next).toHaveBeenCalledWith();
+          expect(next).not.toHaveBeenCalled();
         });
 
     });

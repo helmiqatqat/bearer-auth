@@ -15,7 +15,6 @@ describe('testing the users route handler', () => {
 
   test('Should respond with a secret response', () => {
     let req = {};
-
     handleSecret(req, res, next);
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.send).toHaveBeenCalledWith(expect.anything());
