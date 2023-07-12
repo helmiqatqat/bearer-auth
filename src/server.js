@@ -6,7 +6,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 
 // Esoteric Resources
-const errorHandler = require('./error-handlers/500.js');
+const errorHandler = require('./error-handlers/500');
 const notFound = require('./error-handlers/404.js');
 const authRoutes = require('./auth/router/index.js');
 
@@ -23,13 +23,18 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use(authRoutes);
 
+app.get('/', (req, res) => {
+  res.status(200).send('Hello from bearer-auth');
+});
+
+
 // Catchalls
 app.use(notFound);
 app.use(errorHandler);
 
 module.exports = {
   server: app,
-  startup: (port) => {
+  start: (port) => {
     app.listen(port, () => {
       console.log(`Server Up on ${port}`);
     });

@@ -1,10 +1,14 @@
-'use strict';
+"use strict";
 
-const { users } = require('../models/index.js');
+const { users } = require("../models/index.js");
+const bcrypt = require('bcrypt');
 
 async function handleSignup(req, res, next) {
   try {
-    let userRecord = await users.create(req.body);
+    let userRecord = await users.create({
+      "username": req.body.username,
+      "password": req.body.password
+    });
     const output = {
       user: userRecord,
       token: userRecord.token
@@ -15,15 +19,13 @@ async function handleSignup(req, res, next) {
   }
 }
 
-
-
 async function handleSignin(req, res, next) {
   try {
     const user = {
       user: req.user,
-      token: req.user.token
+      token: req.user.token,
     };
-    res.status(200).json(user);
+    res.status(201).json(user);
   } catch (e) {
     next(e);
   }
@@ -31,8 +33,8 @@ async function handleSignin(req, res, next) {
 
 async function handleGetUsers(req, res, next) {
   try {
-    const userRecords = await users.findAll({});
-    const list = userRecords.map(user => user.username);
+    const userRecords = await users.findAll();
+    const list = userRecords.map((user) => user);
     res.status(200).json(list);
   } catch (e) {
     next(e);
@@ -47,5 +49,5 @@ module.exports = {
   handleSignup,
   handleSignin,
   handleGetUsers,
-  handleSecret
-}
+  handleSecret,
+};
