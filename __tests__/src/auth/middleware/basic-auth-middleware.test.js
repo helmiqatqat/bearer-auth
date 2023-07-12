@@ -35,11 +35,11 @@ describe('Auth Middleware', () => {
   describe('user authentication', () => {
 
     it('fails a login for a user (admin) with the incorrect basic credentials', () => {
-      const basicAuthString = base64.encode(`${userInfo.admin.username}:${userInfo.admin.password}`);
+      const basicAuthString = base64.encode('username:password');
 
       // Change the request to match this test case
       req.headers = {
-        authorization: basicAuthString,
+        authorization: `Basic ${basicAuthString}`,
       };
 
       return middleware(req, res, next)
@@ -55,12 +55,12 @@ describe('Auth Middleware', () => {
 
       // Change the request to match this test case
       req.headers = {
-        authorization: basicAuthString,
+        authorization: `Basic ${basicAuthString}`,
       };
 
       return middleware(req, res, next)
         .then(() => {
-          expect(next).not.toHaveBeenCalled();
+          expect(next).toHaveBeenCalledWith();
         });
 
     });
